@@ -1,6 +1,9 @@
+# Debianbook i3 (how to)
+Debian (netinst) + i3wm on macbook pro retina 2013 (11.1)
+
 I got debian + i3wm working very stable on my macbook pro retina 2013, this is my annotations how to solve some problems and versioned my config files.
 
-# Installing Debian (netinst) and i3wm on macbook pro 11.2
+## Installing Debian (netinst)
 
 Install `debian netinst`, then you can use an android tethering internet connection:
 ```
@@ -19,9 +22,104 @@ then solved via https://wiki.debian.org/wl
 
 With wifi working you can install **i3wm** and start customizing it:
 
+## screen resolution (dpi)
+
+- put this on `/etc/X11/xorg.conf.d/10-monitor.conf`
+```
+Section "Monitor"
+    Identifier             "<default monitor>"
+    DisplaySize            400 250 # In millimeters
+EndSection
+```
+
 ## keyboard schema
 
-// todo
+I want to the keyboard be as close as my experience on macOs, cuz i still use another macbook. This will make these changes:
+
+- `caps look` as `ctrl`
+- `cmd` as `ctrl` (also `i3 mod` key)
+- `altGr` on `left alt` (to make the mac like accentuation. eg: `alt+e` then `a` = `á`)
+
+How to:
+
+- add `00-keyboard.conf` to `/etc/X11/xorg.conf.d`
+```
+Section "InputClass"
+	Identifier "system-keyboard"
+	MatchIsKeyboard "on"
+	Option "XkbLayout" "us"
+	Option "XkbModel" "macbook78"
+	Option "XkbVariant" "mac"
+	Option "XkbOptions" "lv3:alt_switch,ctrl:nocaps,altwin:ctrl_win"
+EndSection
+```
+*but wait... there is no mac variant to `us` symbols... so I make it*
+- append this on `/usr/share/X11/xkb/symbols/macintosh_vndr/us`:
+```
+partial alphanumeric_keys
+xkb_symbols "mac" {
+
+    include "macintosh_vndr/us(extended)"
+    name[Group1]= "English (Macintosh)";
+    key.type[group1]="FOUR_LEVEL";
+
+    key <LSGT> { [   section,  plusminus,       section,        plusminus ] };
+    key <TLDE> { [     grave, asciitilde,    dead_grave,        dead_horn ] };
+    key <AE01> { [         1,     exclam,    exclamdown,            U2044 ] };
+    key <AE02> { [         2,         at,     trademark,         EuroSign ] };
+    key <AE03> { [         3, numbersign,      sterling,            U2039 ] };
+    key <AE04> { [         4,     dollar,          cent,            U203A ] };
+    key <AE05> { [         5,    percent,      infinity,            UFB01 ] };
+    key <AE06> { [         6,asciicircum,       section,            UFB02 ] };
+    key <AE07> { [         7,  ampersand,     paragraph,     doubledagger ] };
+    key <AE08> { [         8,   asterisk, enfilledcircbullet,      degree ] };
+    key <AE09> { [         9,  parenleft,   ordfeminine,   periodcentered ] };
+    key <AE10> { [         0, parenright,     masculine,singlelowquotemark] };
+    key <AE11> { [     minus, underscore,        endash,           emdash ] };
+    key <AE12> { [     equal,       plus,      notequal,        plusminus ] };
+
+    key <AD01> { [         q,          Q,            oe,               OE ] };
+    key <AD02> { [         w,          W,         U2211,doublelowquotemark] };
+    key <AD03> { [         e,          E,    dead_acute,            acute ] };
+    key <AD04> { [         r,          R,    registered,            U2030 ] };
+    key <AD05> { [         t,          T,        dagger,       dead_caron ] };
+    key <AD06> { [         y,          Y,           yen,       onequarter ] };
+    key <AD07> { [         u,        U,  dead_diaeresis,        diaeresis ] };
+    key <AD08> { [         i,        I, dead_circumflex,            U02C6 ] };
+    key <AD09> { [         o,          O,        oslash,         Ooblique ] };
+    key <AD10> { [         p,          P,      Greek_pi,            U220F ] };
+    key <AD11> { [ bracketleft,  braceleft, leftdoublequotemark, rightdoublequotemark ] };
+    key <AD12> { [bracketright, braceright, leftsinglequotemark, rightsinglequotemark ] };
+    key <BKSL> { [ backslash,        bar, guillemotleft,   guillemotright ] };
+
+    key <AC01> { [         a,          A,         aring,            Aring ] };
+    key <AC02> { [         s,          S,        ssharp,      dead_stroke ] };
+    key <AC03> { [         d,          D, partialderivative,          eth ] };
+    key <AC04> { [         f,          F,      function,        dead_hook ] };
+    key <AC05> { [         g,          G,     copyright, dead_doubleacute ] };
+    key <AC06> { [         h,          H, dead_abovedot,    dead_belowdot ] };
+    key <AC07> { [         j,          J,         U2206,          onehalf ] };
+    key <AC08> { [         k,          K,dead_abovering,            UF8FF ] };
+
+    key <AC09> { [         l,          L,       notsign,            THORN ] };
+    key <AC10> { [ semicolon,      colon,         U2026,            thorn ] };
+    key <AC11> { [apostrophe,   quotedbl,            ae,               AE ] };
+
+    key <AB01> { [         z,          Z,   Greek_OMEGA,     dead_cedilla ] };
+    key <AB02> { [         x,          X,         U2248,      dead_ogonek ] };
+                                // unclear whether "approxeq" is 2248 or 2245
+    key <AB03> { [         c,          C,      ccedilla,         Ccedilla ] };
+    key <AB04> { [         v,          V,    squareroot,            U25CA ] };
+    key <AB05> { [         b,          B,      integral,         idotless ] };
+    key <AB06> { [         n,          N,    dead_tilde,            U02DC ] };
+    key <AB07> { [         m,          M,            mu,    threequarters ] };
+    key <AB08> { [     comma,       less, lessthanequal,      dead_macron ] };
+    key <AB09> { [    period,    greater, greaterthanequal,    dead_breve ] };
+    key <AB10> { [     slash,   question,      division,     questiondown ] };
+
+    include "level3(ralt_switch)"
+};
+```
 
 ## Default to Fn keys
 (rather than media keys)
