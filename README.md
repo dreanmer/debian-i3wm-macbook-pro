@@ -7,7 +7,7 @@ I got debian + i3wm working very stable on my macbook pro retina 2013, this is m
 
 Install `debian netinst`, then you can use an android tethering internet connection:
 ```
-    dmsg #to get port mapping when connecting the android device
+    dmesg #to get port mapping when connecting the android device
     dhclient ubsmappeddevice #to start internet
 ```
 
